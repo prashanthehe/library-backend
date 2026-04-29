@@ -270,6 +270,16 @@ app.get("/recommend", (req, res) => {
 // 📚 Personalized Dictionary (CRUD)
 // ===============================
 
+// Word definition lookup (proxies to free dictionary API concept)
+app.get("/dictionary/word/:word", (req, res) => {
+  const word = req.params.word;
+  // Check local dictionary first
+  const local = dictionary.find(d => d.word && d.word.toLowerCase() === word.toLowerCase());
+  if (local) return res.json(local);
+  // Return a redirect hint to use free API
+  res.json({ word, message: "Use https://api.dictionaryapi.dev/api/v2/entries/en/" + word + " for definitions." });
+});
+
 app.get("/dictionary/:userId", (req, res) => {
   const userWords = dictionary.filter(d => d.userId == req.params.userId);
   res.json(userWords);
